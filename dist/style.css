@@ -1,0 +1,36 @@
+#expand-collapse-btn {
+  position: absolute;
+  top: 5px; 
+  right: 5px;
+}
+#overlay #expand-collapse-btn:before {
+  content: "▽";
+}
+#overlay.collapsed #expand-collapse-btn:before {
+  content: "◁";
+}
+#overlay {
+  position: absolute;
+  z-index: 1;
+  top: 5px; 
+  left: 5px; 
+  right: 5px;
+  height: 3em;
+  border: 2px solid black;
+  border-radius: 8px;
+  background-color: #eee;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+#overlay.collapsed {
+  height: auto;
+  left: auto;
+}
+#overlay.collapsed > #panel {
+  padding: 2em;
+}
+#overlay.collapsed > #panel {
+  display: none;
+}

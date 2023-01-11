@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>FighterTest</title>
+    <meta name="ShieldsUp!" content="pewpew!" />
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+
+    <!-- physics and other extras -->
+    <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@v6.1.1/dist/aframe-extras.min.js"></script>
+    <script src="index.bundle.js"></script>
+
+    <script type="text/javascript">
+      var cameraPosition = new THREE.Vector3();
+      var cameraDirection = new THREE.Vector3();
+      AFRAME.registerComponent("listener", {
+        schema: {
+          stepFactor: {
+            type: "number",
+            default: 0.05,
+          },
+        },
+        tick: function () {
+          this.el.components.camera.camera.parent.position.add(
+            this.el.components.camera.camera
+              .getWorldDirection(cameraPosition)
+              .multiplyScalar(this.data.stepFactor)
+          );
+        },
+      });
+      AFRAME.registerComponent('spinner', {
+        schema:{
+          axes:{type: 'vec3', default: {x: 0, y: 0, z: 0}}
+        },
+        init: function () {
+          let spinaxes = this.el.components.spinner.axes; 
+          console.log("spinner init", this.data);
+          //console.log("spinaxes:", spinaxes);
+        },
+        tick: function(){ // called every frame
+          let rot = this.el.getAttribute('rotation');
+          let spinaxes = this.data.axes;
+          this.el.setAttribute('rotation', {
+            x: rot.x + spinaxes.x*1, 
+            y: rot.y + spinaxes.y*1,
+            z: rot.z + spinaxes.z*1
+          });
+        }      
+      });      
+    </script>
+    <link rel="StyleSheet" href="style.css">
+  </head>
+  <body>
+    <div id="overlay" class="collapsed">
+      <div id="panel">
+        <span>No buttons</span>
+      </div>
+      <button id="expand-collapse-btn"></button>
+    </div>
+    <a-scene>
+      <a-assets>
+      </a-assets>
+    </a-scene>
+  </body>
+</html>

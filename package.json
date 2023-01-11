@@ -1,0 +1,29 @@
+{
+  "name": "fightertest-app",
+  "version": "1.0.0",
+  "description": "**Part of an Explortation for ShieldsUp!**",
+  "private": true,
+  "dependencies": {
+    "firebase": "^9.12.1"
+  },
+  "devDependencies": {
+    "webpack": "^5.74.0",
+    "webpack-cli": "^4.10.0"
+  },
+  "scripts": {
+    "build": "webpack --mode=development",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sfoster/shieldsup-fightertest.git"
+  },
+  "keywords": [],
+  "author": "sfoster",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sfoster/shieldsup-fightertest/issues"
+  },
+  "homepage": "https://github.com/sfoster/shieldsup-fightertest#readme",
+  "main": "webpack.config.js"
+}
