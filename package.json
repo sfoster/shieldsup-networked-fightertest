@@ -1,5 +1,5 @@
 {
-  "name": "fightertest-app",
+  "name": "networked-fightertest",
   "version": "1.0.0",
   "description": "**Part of an Explortation for ShieldsUp!**",
   "private": true,
@@ -17,14 +17,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/sfoster/shieldsup-fightertest.git"
+    "url": "https://github.com/sfoster/shieldsup-networked-fightertest.git"
   },
   "keywords": [],
   "author": "sfoster",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/sfoster/shieldsup-fightertest/issues"
+    "url": "https://github.com/sfoster/shieldsup-networked-fightertest/issues"
   },
-  "homepage": "https://github.com/sfoster/shieldsup-fightertest#readme",
+  "homepage": "https://github.com/sfoster/shieldsup-networked-fightertest#readme",
   "main": "webpack.config.js"
 }
