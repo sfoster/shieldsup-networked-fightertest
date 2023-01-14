@@ -6,9 +6,16 @@
     <title>FighterTest - With Networked-Aframe</title>
     <meta name="ShieldsUp!" content="pewpew!" />
     <script src="./aframe-master.min.js"></script>
+    <script>
+      THREE.Math = { //Fix
+        degToRad: THREE.MathUtils.degToRad,
+        randInt: THREE.MathUtils.randInt,
+        randFloat: THREE.MathUtils.randFloat
+      };
+    </script>
 
     <!--   NAF basic requirements   -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.5.0/socket.io.slim.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
     <script src="/easyrtc/easyrtc.js"></script>
     <script src="./networked-aframe.js"></script>
 
