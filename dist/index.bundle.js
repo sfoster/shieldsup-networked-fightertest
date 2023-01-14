@@ -193,9 +193,9 @@ function initScene(sceneData) {
   });
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-  initScene();
-});
+// document.addEventListener("DOMContentLoaded", () => {
+//   initScene();
+// });
 
 module.exports = {
   initScene,

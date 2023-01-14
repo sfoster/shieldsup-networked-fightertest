@@ -3,32 +3,23 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>FighterTest</title>
+    <title>FighterTest - With Networked-Aframe</title>
     <meta name="ShieldsUp!" content="pewpew!" />
-    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+    <script src="./aframe-master.min.js"></script>
+
+    <!--   NAF basic requirements   -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.5.0/socket.io.slim.js"></script>
+    <script src="/easyrtc/easyrtc.js"></script>
+    <script src="./networked-aframe.js"></script>
 
     <!-- physics and other extras -->
     <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@v6.1.1/dist/aframe-extras.min.js"></script>
     <script src="index.bundle.js"></script>
+    <!--   used to prevent players from spawning on top of each other so much  -->
+    <script src="/js/spawn-in-circle.component.js"></script>
 
     <script type="text/javascript">
-      var cameraPosition = new THREE.Vector3();
-      var cameraDirection = new THREE.Vector3();
-      AFRAME.registerComponent("listener", {
-        schema: {
-          stepFactor: {
-            type: "number",
-            default: 0.05,
-          },
-        },
-        tick: function () {
-          this.el.components.camera.camera.parent.position.add(
-            this.el.components.camera.camera
-              .getWorldDirection(cameraPosition)
-              .multiplyScalar(this.data.stepFactor)
-          );
-        },
-      });
+      // spinning asteroids just for the fun of it
       AFRAME.registerComponent('spinner', {
         schema:{
           axes:{type: 'vec3', default: {x: 0, y: 0, z: 0}}
@@ -36,7 +27,6 @@
         init: function () {
           let spinaxes = this.el.components.spinner.axes; 
           console.log("spinner init", this.data);
-          //console.log("spinaxes:", spinaxes);
         },
         tick: function(){ // called every frame
           let rot = this.el.getAttribute('rotation');
@@ -49,6 +39,35 @@
         }      
       });      
     </script>
+    <script>
+      // Called by Networked-Aframe when connected to server (optional)
+      // (this api will change in future versions)
+      function onConnect() {
+        console.log('onConnect', new Date());
+      }
+      // Note the way we're establishing the NAF schema here; this is a bit awkward
+      // see issue https://github.com/networked-aframe/networked-aframe/issues/267
+
+      NAF.schemas.getComponentsOriginal = NAF.schemas.getComponents;
+      NAF.schemas.getComponents = (template) => {
+        if (!NAF.schemas.hasTemplate('#player-ship-template')) {
+          NAF.schemas.add({
+            template: '#player-ship-template',
+            components: [
+              'position',
+              'rotation',
+              {
+                selector: '.ship',
+                component: 'rotation',
+              }
+            ]
+          });
+        }
+        const components = NAF.schemas.getComponentsOriginal(template);
+        return components;
+      };
+
+    </script>
     <link rel="StyleSheet" href="style.css">
   </head>
   <body>
@@ -58,9 +77,57 @@
       </div>
       <button id="expand-collapse-btn"></button>
     </div>
-    <a-scene>
+
+    <a-scene
+     networked-scene="room: shooter; debug: true; adapter: wseasyrtc;"
+    >
       <a-assets>
+        <!-- Templates-->
+        <template id="player-ship-template">
+          <a-entity class="ship-box" rotation="0 0 0" position="0 0 0">
+            <a-entity class="ship" position="0 1.6 10" rotation="0 0 0">
+              <a-gltf-model material="fog: false" src="#arwing" rotation="0 180 0" scale=".1 .1 .1" position="0 -.25 -.75"></a-gltf-model>
+            </a-entity>
+          </a-entity>
+        </template>
+        
+        <a-assets-item id="rock" src="https://cdn.glitch.me/e99f4064-e398-48d8-882b-d24a844fbb01%2FRubbishAsteroid.glb?v=1634518101527"></a-assets-item>
+        <a-assets-item id="planet" src="https://cdn.glitch.me/e99f4064-e398-48d8-882b-d24a844fbb01%2FPlanet.gltf?v=1634667469737"></a-assets-item>
+        <a-assets-item id="arwing" src="https://cdn.glitch.me/e99f4064-e398-48d8-882b-d24a844fbb01%2FArwing.gltf?v=1637369756460"></a-assets-item>
       </a-assets>
+
+      <a-entity 
+          id="rig" 
+          class="ship-box"
+          networked="template:#player-ship-template;attachTemplateToLocal:false;"
+          spawn-in-circle="radius:1"
+          keyboard-controls="" gamepad-controls="" touch-controls="" movement-controls="" trackpad-controls=""
+          rotation="0 0 0" position="0 0 0"
+      >
+        <a-entity class="ship" position="0 1.6 10" rotation="0 0 0" look-controls="" id="e-309564540296829" camera="">
+          <a-gltf-model material="fog: false" src="#arwing" rotation="0 180 0" scale=".1 .1 .1" position="0 -.25 -.75" id="e-1512287296079489" gltf-model="" parentid="e-309564540296829">
+          </a-gltf-model>
+          <a-cursor raycaster="" cursor="" material="" geometry="" position="" id="e-636464547247480" parentid="e-309564540296829">
+          </a-cursor>
+        </a-entity>
+      </a-entity>
+
+      <a-entity id="asteroids">
+        <a-gltf-model src="#rock" position="8 0 -6" scale=".5 .5 .5" rotation="0 270 0"></a-gltf-model>
+        <a-gltf-model src="#rock" position="-4 0 -5" scale=".5 .5 .5" rotation="270 0 0"></a-gltf-model>
+        <a-gltf-model src="#rock" position="0 0 -15" scale=".5 .5 .5" rotation="0 0 0" spinner="axes: 0 2 0"></a-gltf-model>
+        <a-gltf-model src="#rock" position="5 0 -10" scale=".5 .5 .5" rotation="90 0 0" spinner="axes: 1 0 0"></a-gltf-model>
+        <a-gltf-model src="#rock" position="-7 0 -11" scale=".5 .5 .5" rotation="0 0 180" spinner="axes: 0 0 1"></a-gltf-model>
+        <a-gltf-model src="#rock" position="8 0 -21" scale=".5 .5 .5" rotation="0 270 0"></a-gltf-model>
+        <a-gltf-model src="#rock" position="-4 0 -5" scale=".5 .5 .5" rotation="270 0 0"></a-gltf-model>
+      </a-entity>
+      <a-gltf-model position="-300 0 -200" scale="20 20 20" src="#planet" material="fog: false"></a-gltf-model>
+      </a-entity>
+      <a-sky id="sky" rotation="0 180 0" src="https://cdn.glitch.me/e99f4064-e398-48d8-882b-d24a844fbb01%2Fpanorama_image.png?v=1634611197961" material="" geometry="" scale=""></a-sky>
+      <a-light type="directional" intensity="2" position="0 0 0" target="#directionaltarget" light="">
+        <a-entity id="directionaltarget" position="0 -1 0"></a-entity>
+      </a-light>
+      <a-light type="ambient" light=""></a-light>
     </a-scene>
   </body>
 </html>

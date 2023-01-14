@@ -24,8 +24,10 @@
       "gamepad-controls": "",
       "trackpad-controls": "",
       "keyboard-controls": "",
-      "touch-controls": "",
-      "a-path": "#rig"
+      "touch-controls": "", 
+      "a-path": "#rig",
+      "spawn-in-circle": "radius:3",
+      "networked": "template:#player-ship-template; attachTemplateToLocal: true"
     },
     {
       "a-type": "entity",
