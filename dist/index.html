@@ -7,7 +7,14 @@
     <meta name="ShieldsUp!" content="pewpew!" />
     <script src="./aframe-master.min.js"></script>
     <script>
+      var url = new URL(location.href);
+      if (url.hostname !== "localhost" && url.protocol !== "https:") {
+        url.protocol = "https:";
+        console.log("Redirecting to https:", url.toString());
+        location.replace(url.toString());
+      }
       THREE.Math = { //Fix
+        radToDeg: THREE.MathUtils.radToDeg,
         degToRad: THREE.MathUtils.degToRad,
         randInt: THREE.MathUtils.randInt,
         randFloat: THREE.MathUtils.randFloat
@@ -25,27 +32,6 @@
     <!--   used to prevent players from spawning on top of each other so much  -->
     <script src="/js/spawn-in-circle.component.js"></script>
 
-    <script type="text/javascript">
-      // spinning asteroids just for the fun of it
-      AFRAME.registerComponent('spinner', {
-        schema:{
-          axes:{type: 'vec3', default: {x: 0, y: 0, z: 0}}
-        },
-        init: function () {
-          let spinaxes = this.el.components.spinner.axes; 
-          console.log("spinner init", this.data);
-        },
-        tick: function(){ // called every frame
-          let rot = this.el.getAttribute('rotation');
-          let spinaxes = this.data.axes;
-          this.el.setAttribute('rotation', {
-            x: rot.x + spinaxes.x*1, 
-            y: rot.y + spinaxes.y*1,
-            z: rot.z + spinaxes.z*1
-          });
-        }      
-      });      
-    </script>
     <script>
       // Called by Networked-Aframe when connected to server (optional)
       // (this api will change in future versions)
@@ -111,23 +97,20 @@
           keyboard-controls="" gamepad-controls="" touch-controls="" movement-controls="" trackpad-controls=""
           rotation="0 0 0" position="0 0 0"
       >
-        <a-entity class="ship" position="0 1.6 10" rotation="0 0 0" look-controls="" id="e-309564540296829" camera="">
-          <a-gltf-model material="fog: false" src="#arwing" rotation="0 180 0" scale=".1 .1 .1" position="0 -.25 -.75" id="e-1512287296079489" gltf-model="" parentid="e-309564540296829">
-          </a-gltf-model>
-          <a-cursor raycaster="" cursor="" material="" geometry="" position="" id="e-636464547247480" parentid="e-309564540296829">
+        <a-entity id="player-camera" position="0 0.2 0.3" rotation="0 0 0" look-controls="" camera="">
+          <a-cursor raycaster="" cursor="" material="" geometry="" position="">
           </a-cursor>
-        </a-entity>
+          <a-entity id="the-ship" class="ship" position="0 0 0" rotation="0 0 0" follow-rotation="target: #player-camera">
+            <a-gltf-model material="fog: false" src="#arwing" rotation="0 180 0" scale=".1 .1 .1" position="0 -.25 -.75" id="e-1512287296079489" gltf-model="" parentid="e-309564540296829"></a-gltf-model>
+          </a-entity>
+          </a-entity>
       </a-entity>
 
-      <a-entity id="asteroids">
-        <a-gltf-model src="#rock" position="8 0 -6" scale=".5 .5 .5" rotation="0 270 0"></a-gltf-model>
-        <a-gltf-model src="#rock" position="-4 0 -5" scale=".5 .5 .5" rotation="270 0 0"></a-gltf-model>
-        <a-gltf-model src="#rock" position="0 0 -15" scale=".5 .5 .5" rotation="0 0 0" spinner="axes: 0 2 0"></a-gltf-model>
-        <a-gltf-model src="#rock" position="5 0 -10" scale=".5 .5 .5" rotation="90 0 0" spinner="axes: 1 0 0"></a-gltf-model>
-        <a-gltf-model src="#rock" position="-7 0 -11" scale=".5 .5 .5" rotation="0 0 180" spinner="axes: 0 0 1"></a-gltf-model>
-        <a-gltf-model src="#rock" position="8 0 -21" scale=".5 .5 .5" rotation="0 270 0"></a-gltf-model>
-        <a-gltf-model src="#rock" position="-4 0 -5" scale=".5 .5 .5" rotation="270 0 0"></a-gltf-model>
-      </a-entity>
+      <a-entity 
+        id="asteroids" 
+        asteroid-field="asset: #rock; position-bounds: -8:40 0:0 -60:-5; scale: 0.5"
+      ></a-entity>
+
       <a-gltf-model position="-300 0 -200" scale="20 20 20" src="#planet" material="fog: false"></a-gltf-model>
       </a-entity>
       <a-sky id="sky" rotation="0 180 0" src="https://cdn.glitch.me/e99f4064-e398-48d8-882b-d24a844fbb01%2Fpanorama_image.png?v=1634611197961" material="" geometry="" scale=""></a-sky>

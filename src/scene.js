@@ -1,4 +1,7 @@
 const freezeThaw = require("./freezeThaw.js");
+require("./asteroid-field.js");
+require("./follow-rotation.js");
+require("./spinner.js");
 
 function requestSceneData(filename) {
   const dataURL = new URL(filename, window.location.href);
@@ -30,13 +33,8 @@ function initScene(sceneData) {
     freezeThaw.addAssets(assets, sceneElem);
     let sortedEntities = freezeThaw.sortEntities(entities);
     freezeThaw.addEntities(sortedEntities, sceneElem);
-    // console.log("Loaded, result:", result);
   });
 }
-
-// document.addEventListener("DOMContentLoaded", () => {
-//   initScene();
-// });
 
 module.exports = {
   initScene,
